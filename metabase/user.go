@@ -77,8 +77,9 @@ func (c *Client) GetUsers(includeDeactivated bool) ([]User, error) {
 	query := url.Values{}
 
 	// valid only when includeDeactivated is true
-	if includeDeactivated:
+	if includeDeactivated {
 		query.Add("include_deactivated", strconv.FormatBool(includeDeactivated))
+	}
 
 	req, err := c.newRequest("GET", "/api/user", query, nil)
 	if err != nil {
