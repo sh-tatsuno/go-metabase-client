@@ -179,12 +179,12 @@ func (c *Client) CreateUser(
 ) (*User, error) {
 
 	d := struct {
-		firstName       string      `json:"first_name"`
-		lastName        string      `json:"last_name"`
-		email           string      `json:"email"`
-		password        string      `json:"password"`
-		groupIDs        []int       `json:"group_ids"`
-		loginAttributes interface{} `json:"login_attributes"`
+		FirstName       string      `json:"first_name"`
+		LastName        string      `json:"last_name"`
+		Email           string      `json:"email"`
+		Password        string      `json:"password"`
+		GroupIDs        []int       `json:"group_ids"`
+		LoginAttributes interface{} `json:"login_attributes"`
 	}{
 		firstName,
 		lastName,
@@ -193,6 +193,7 @@ func (c *Client) CreateUser(
 		groupIDs,
 		loginAttributes,
 	}
+
 	reqData, err := json.Marshal(&d)
 	if err != nil {
 		return nil, err
