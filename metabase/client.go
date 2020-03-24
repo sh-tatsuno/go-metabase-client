@@ -46,6 +46,7 @@ func (c *Client) newRequest(method, requestPath string, query url.Values, body i
 	url := c.URL
 	url.Path = path.Join(url.Path, requestPath)
 	url.RawQuery = query.Encode()
+
 	req, err := http.NewRequest(method, url.String(), body)
 	if err != nil {
 		return req, err
