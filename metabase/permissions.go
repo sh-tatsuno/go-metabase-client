@@ -165,5 +165,89 @@ func (c *Client) UpdatePermissionsGroup(groupID int, groupName string) (*Group, 
 	return &res, nil
 }
 
-// GET /api/permissions/graph
+// ================
+// Graph Permission
+// ================
+
+type PermissionsGraph struct {
+	Revision int `json:"revision"`
+	Groups   map[string](map[string]interface{})
+}
+
+type BulkPermission struct {
+	Native string
+	Schema string
+}
+
+type StepPermission struct {
+	Native string
+	Schema map[string]string
+}
+
+func (p *PermissionsGraph) UnmarshalJSON(data []byte) error {
+	type Alias PermissionsGraph
+	a := &struct {
+		Groups map[string](map[string]json.RawMessage)
+		*Alias
+	}{
+		Alias: (*Alias)(p),
+	}
+
+	if err := json.Unmarshal(data, &a); err != nil {
+		return err
+	}
+
+	m := map[string](map[string]interface{}){}
+	for groupKey, groupValue := range a.Groups {
+		graphMap := map[string]interface{}{}
+		for graphKey, graphValue := range groupValue {
+			var s StepPermission
+			if err := json.Unmarshal(graphValue, &s); err == nil {
+				graphMap[graphKey] = &s
+			} else {
+				var b BulkPermission
+				if err := json.Unmarshal(graphValue, &b); err == nil {
+					graphMap[graphKey] = &b
+				}
+			}
+
+		}
+		m[groupKey] = graphMap
+	}
+	p.Groups = m
+
+	return nil
+}
+
+func (c *Client) GetPermissionsGraphs() (*PermissionsGraph, error) {
+	resData, err := c.getRequest("/api/permissions/graph", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res := PermissionsGraph{}
+	err = json.Unmarshal(resData, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (c *Client) UpdatePermissionsGraph() (*PermissionsGraph, error) {
+
+	resData, err := c.putRequest("/api/permissions/graph", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res := PermissionsGraph{}
+	err = json.Unmarshal(resData, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 // PUT /api/permissions/graph
