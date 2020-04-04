@@ -256,5 +256,3 @@ func (c *Client) UpdatePermissionsGraph(p PermissionsGraph) (*PermissionsGraph, 
 
 	return &res, nil
 }
-
-// PUT /api/permissions/graph

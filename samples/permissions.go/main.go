@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"time"
 
 	metabase "github.com/sh-tatsuno/go-metabase-client/metabase"
@@ -41,10 +42,34 @@ func main() {
 	}
 	fmt.Printf("Get Graph:\n %+v\n\n", x)
 
+	// Get User Permission
 	r, err := c.GetPermissionsGraphs()
 	if err != nil {
 		fmt.Printf("err in Get Permission: %v\n", err)
 	}
-	fmt.Printf("Get Graph:\n %+v\n\n", r)
+	fmt.Printf("Get Graph Permission:\n %+v\n\n", r)
+
+	// update status
+	// switch allow <-> deny permission of group 1 for graph 1
+	allowPermission := metabase.BulkPermission{
+		Native:  "write",
+		Schemas: "all",
+	}
+
+	denyPermission := metabase.BulkPermission{
+		Native: "none",
+	}
+
+	if reflect.DeepEqual(r.Groups["1"]["1"], &allowPermission) {
+		r.Groups["1"]["1"] = &denyPermission
+	} else {
+		r.Groups["1"]["1"] = &allowPermission
+	}
+
+	r2, err := c.UpdatePermissionsGraph(*r)
+	if err != nil {
+		fmt.Printf("err in Update Permission: %v\n", err)
+	}
+	fmt.Printf("Get Graph:\n %+v\n\n", r2)
 
 }
