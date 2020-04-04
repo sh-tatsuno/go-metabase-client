@@ -5,17 +5,6 @@ import (
 	"fmt"
 )
 
-// GET /api/collection/
-// GET /api/collection/:id
-// GET /api/collection/root
-// GET /api/collection/:id/items
-// GET /api/collection/root/items
-// GET /api/collection/graph
-
-// POST /api/collection/
-// PUT /api/collection/:id
-// PUT /api/collection/graph
-
 type Collection struct {
 	ID                 json.Number         `json:"id"`
 	Description        *string             `json:"description,omitempty"`
