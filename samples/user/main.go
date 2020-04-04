@@ -9,7 +9,7 @@ import (
 	metabase "github.com/sh-tatsuno/go-metabase-client/metabase"
 )
 
-func randomGenerator(n int) string {
+func randomGenerator(n int64) string {
 	rand.Seed(time.Now().UnixNano())
 	numPatterns := []rune("0123456789")
 	b := make([]rune, n)
