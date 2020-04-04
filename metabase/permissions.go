@@ -170,24 +170,24 @@ func (c *Client) UpdatePermissionsGroup(groupID int, groupName string) (*Group, 
 // ================
 
 type PermissionsGraph struct {
-	Revision int `json:"revision"`
-	Groups   map[string](map[string]interface{})
+	Revision int                                 `json:"revision"`
+	Groups   map[string](map[string]interface{}) `json:"groups"`
 }
 
 type BulkPermission struct {
-	Native string
-	Schema string
+	Native  string `json:"native,omitempty"`
+	Schemas string `json:"schemas,omitempty"`
 }
 
 type StepPermission struct {
-	Native string
-	Schema map[string]string
+	Native  string                         `json:"native,omitempty"`
+	Schemas map[string](map[string]string) `json:"schemas,omitempty"`
 }
 
 func (p *PermissionsGraph) UnmarshalJSON(data []byte) error {
 	type Alias PermissionsGraph
 	a := &struct {
-		Groups map[string](map[string]json.RawMessage)
+		Groups map[string](map[string]json.RawMessage) `json:"groups"`
 		*Alias
 	}{
 		Alias: (*Alias)(p),
@@ -208,6 +208,8 @@ func (p *PermissionsGraph) UnmarshalJSON(data []byte) error {
 				var b BulkPermission
 				if err := json.Unmarshal(graphValue, &b); err == nil {
 					graphMap[graphKey] = &b
+				} else {
+					return err
 				}
 			}
 
@@ -234,9 +236,14 @@ func (c *Client) GetPermissionsGraphs() (*PermissionsGraph, error) {
 	return &res, nil
 }
 
-func (c *Client) UpdatePermissionsGraph() (*PermissionsGraph, error) {
+func (c *Client) UpdatePermissionsGraph(p PermissionsGraph) (*PermissionsGraph, error) {
 
-	resData, err := c.putRequest("/api/permissions/graph", nil)
+	reqData, err := json.Marshal(p)
+	if err != nil {
+		return nil, err
+	}
+
+	resData, err := c.putRequest("/api/permissions/graph", reqData)
 	if err != nil {
 		return nil, err
 	}
