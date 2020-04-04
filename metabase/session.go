@@ -37,14 +37,14 @@ func (c *Client) CreateSession(user string, password string) (*string, error) {
 	return c.Token, err
 }
 
-func (c *Client) DeleteSession() (*bool, error) {
+func (c *Client) DeleteSession() error {
 
-	res, err := c.deleteRequest("/api/session/")
+	err := c.deleteRequest("/api/session/")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return res, nil
+	return nil
 }
 
 // GET /api/session/password_reset_token_valid

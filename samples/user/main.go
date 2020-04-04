@@ -72,10 +72,10 @@ func main() {
 	fmt.Printf("Get Current User:\n %+v\n\n", u4)
 
 	// Delete User
-	b, err := c.DeleteUser(u1.ID)
+	err = c.DeleteUser(u1.ID)
 	if err != nil {
 		fmt.Printf("err in Delete User: %v\n", err)
 	}
-	fmt.Printf("deleted:\n %+v\n\n", b)
+	fmt.Println("deleted")
 
 }

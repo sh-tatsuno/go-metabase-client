@@ -80,25 +80,25 @@ func (c *Client) putRequest(endpoint string, body []byte) ([]byte, error) {
 	return resData, nil
 }
 
-func (c *Client) deleteRequest(endpoint string) (*bool, error) {
+func (c *Client) deleteRequest(endpoint string) error {
 
 	req, err := c.newRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	resp, err := c.do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("err in delete command. endpoint: %s, code: %v", endpoint, resp.Status)
+		return fmt.Errorf("err in delete command. endpoint: %s, code: %v", endpoint, resp.Status)
 	}
 
 	resData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	res := struct {
@@ -107,8 +107,8 @@ func (c *Client) deleteRequest(endpoint string) (*bool, error) {
 
 	err = json.Unmarshal(resData, &res)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &res.Success, nil
+	return nil
 }

@@ -36,14 +36,14 @@ type UpdateUser struct {
 	LoginAttributes interface{} `json:"login_attributes"`
 }
 
-func (c *Client) DeleteUser(id int) (*bool, error) {
+func (c *Client) DeleteUser(id int) error {
 
-	res, err := c.deleteRequest(fmt.Sprintf("/api/user/%d", id))
+	err := c.deleteRequest(fmt.Sprintf("/api/user/%d", id))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return res, nil
+	return nil
 }
 
 func (c *Client) GetUsers(includeDeactivated bool) ([]User, error) {

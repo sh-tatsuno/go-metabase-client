@@ -17,24 +17,24 @@ type Membership struct {
 	UserID       int `json:"user_id"`
 }
 
-func (c *Client) DeletePermissionsGroup(groupID int) (*bool, error) {
+func (c *Client) DeletePermissionsGroup(groupID int) error {
 
-	res, err := c.deleteRequest(fmt.Sprintf("/api/permissions/group/%d", groupID))
+	err := c.deleteRequest(fmt.Sprintf("/api/permissions/group/%d", groupID))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return res, nil
+	return nil
 }
 
-func (c *Client) DeletePermissionsMembership(membershipID int) (*bool, error) {
+func (c *Client) DeletePermissionsMembership(membershipID int) error {
 
-	res, err := c.deleteRequest(fmt.Sprintf("/api/permissions/membership/%d", membershipID))
+	err := c.deleteRequest(fmt.Sprintf("/api/permissions/membership/%d", membershipID))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return res, nil
+	return nil
 }
 
 func (c *Client) GetPermissionsGroups() ([]Group, error) {
