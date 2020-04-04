@@ -1,11 +1,8 @@
 package metabase
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"strconv"
 )
@@ -39,37 +36,14 @@ type UpdateUser struct {
 	LoginAttributes interface{} `json:"login_attributes"`
 }
 
-func (c *Client) DeleteUser(id int) (*bool, error) {
+func (c *Client) DeleteUser(id int) error {
 
-	req, err := c.newRequest("DELETE", fmt.Sprintf("/api/user/%d", id), nil, nil)
+	err := c.deleteRequest(fmt.Sprintf("/api/user/%d", id))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	resp, err := c.do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	result := struct {
-		Success bool `json:"success"`
-	}{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &result.Success, err
+	return nil
 }
 
 func (c *Client) GetUsers(includeDeactivated bool) ([]User, error) {
@@ -81,92 +55,50 @@ func (c *Client) GetUsers(includeDeactivated bool) ([]User, error) {
 		query.Add("include_deactivated", strconv.FormatBool(includeDeactivated))
 	}
 
-	req, err := c.newRequest("GET", "/api/user", query, nil)
+	resData, err := c.getRequest("/api/user", query)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	res := []User{}
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := []User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return res, err
 }
 
 func (c *Client) GetUser(id int) (*User, error) {
 
-	req, err := c.newRequest("GET", fmt.Sprintf("/api/user/%d", id), nil, nil)
+	resData, err := c.getRequest(fmt.Sprintf("/api/user/%d", id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	res := User{}
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, err
+	return &res, err
 }
 
 func (c *Client) GetCurrentUser() (*User, error) {
 
-	req, err := c.newRequest("GET", "/api/user/current", nil, nil)
+	resData, err := c.getRequest("/api/user/current", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	res := User{}
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, err
+	return &res, err
 }
 
 func (c *Client) CreateUser(
@@ -199,65 +131,37 @@ func (c *Client) CreateUser(
 		return nil, err
 	}
 
-	req, err := c.newRequest("POST", "/api/user", nil, bytes.NewBuffer(reqData))
+	resData, err := c.postRequest("/api/user", reqData)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	res := &User{}
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := &User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return res, err
 }
 
 func (c *Client) SendInvite(id int) (*bool, error) {
 
-	req, err := c.newRequest("POST", fmt.Sprintf("/api/user/%d/send_invite", id), nil, nil)
+	resData, err := c.postRequest(fmt.Sprintf("/api/user/%d/send_invite", id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	result := struct {
+	res := struct {
 		Success bool `json:"success"`
 	}{}
 
-	err = json.Unmarshal(respData, &result)
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	return &result.Success, err
+	return &res.Success, err
 }
 
 func (c *Client) UpdateUser(u UpdateUser) (*User, error) {
@@ -267,32 +171,18 @@ func (c *Client) UpdateUser(u UpdateUser) (*User, error) {
 		return nil, err
 	}
 
-	req, err := c.newRequest("PUT", "/api/user", nil, bytes.NewBuffer(reqData))
+	resData, err := c.postRequest("/api/user", reqData)
+	if err != nil {
+		return nil, err
+	}
+	res := &User{}
+
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := &User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return res, err
 }
 
 func (c *Client) UpdatePassword(
@@ -315,94 +205,51 @@ func (c *Client) UpdatePassword(
 		return nil, err
 	}
 
-	req, err := c.newRequest("PUT", fmt.Sprintf("/api/user/%d/password", d.ID), nil, bytes.NewBuffer(reqData))
+	resData, err := c.putRequest(fmt.Sprintf("/api/user/%d/password", d.ID), reqData)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	res := &User{}
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := &User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return res, err
 }
 
 func (c *Client) Qbnewb(id int) (*bool, error) {
 
-	req, err := c.newRequest("PUT", fmt.Sprintf("/api/user/%d/qbnewb", id), nil, nil)
+	resData, err := c.putRequest(fmt.Sprintf("/api/user/%d/qbnewb", id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	result := struct {
+	res := struct {
 		Success bool `json:"success"`
 	}{}
 
-	err = json.Unmarshal(respData, &result)
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	return &result.Success, err
+	return &res.Success, err
 }
 
 func (c *Client) Reactive(id int) (*User, error) {
 
-	req, err := c.newRequest("PUT", fmt.Sprintf("/api/user/%d/reactive", id), nil, nil)
+	resData, err := c.putRequest(fmt.Sprintf("/api/user/%d/reactive", id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
+	res := &User{}
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &User{}
-
-	err = json.Unmarshal(respData, &result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
+	return res, err
 }

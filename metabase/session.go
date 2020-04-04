@@ -1,10 +1,7 @@
 package metabase
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
-	"io/ioutil"
 )
 
 type Session struct {
@@ -12,7 +9,7 @@ type Session struct {
 	Password string `json:"password"`
 }
 
-func (c *Client) NewSession(user string, password string) (*string, error) {
+func (c *Client) CreateSession(user string, password string) (*string, error) {
 	s := Session{
 		User:     user,
 		Password: password,
@@ -21,32 +18,37 @@ func (c *Client) NewSession(user string, password string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := c.newRequest("POST", "/api/session", nil, bytes.NewBuffer(reqData))
+
+	resData, err := c.postRequest("/api/session", reqData)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := c.do(req)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != 200 {
-		return nil, errors.New(resp.Status)
-	}
-
-	respData, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	result := struct {
+	res := struct {
 		ID string `json:"id"`
 	}{}
 
-	err = json.Unmarshal(respData, &result)
+	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	c.Token = &(result.ID)
+	c.Token = &(res.ID)
 	return c.Token, err
 }
+
+func (c *Client) DeleteSession() error {
+
+	err := c.deleteRequest("/api/session/")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GET /api/session/password_reset_token_valid
+// GET /api/session/properties
+// POST /api/session/forgot_password
+// POST /api/session/google_auth
+// POST /api/session/reset_password

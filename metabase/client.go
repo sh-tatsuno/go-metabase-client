@@ -33,7 +33,7 @@ func NewClient(baseURL string, user string, password string) (*Client, error) {
 		HTTPClient: cleanhttp.DefaultClient(),
 	}
 
-	_, err = client.NewSession(user, password)
+	_, err = client.CreateSession(user, password)
 	if err != nil {
 		return nil, err
 	}
