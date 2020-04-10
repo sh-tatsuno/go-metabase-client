@@ -26,13 +26,22 @@ type User struct {
 	UpdatedAt            string      `json:"updated_at"`
 }
 
+type UserRequest struct {
+	Email           string      `json:"email"`
+	Password        string      `json:"password"`
+	FirstName       string      `json:"first_name,omitempty"`
+	LastName        string      `json:"last_name,omitempty"`
+	GroupIds        []int64     `json:"group_ids"`
+	LoginAttributes interface{} `json:"login_attributes"`
+}
+
 type UserPatch struct {
 	ID              int64       `json:"id"`
-	Email           *string     `json:"email"`
-	FirstName       *string     `json:"first_name"`
-	LastName        *string     `json:"last_name"`
+	Email           string      `json:"email,omitempty"`
+	FirstName       string      `json:"first_name,omitempty"`
+	LastName        string      `json:"last_name,omitempty"`
 	GroupIds        []int64     `json:"group_ids"`
-	IsSuperuser     *bool       `json:"is_superuser"`
+	IsSuperuser     bool        `json:"is_superuser,omitempty"`
 	LoginAttributes interface{} `json:"login_attributes"` // TODO: change to appropriate struct
 }
 
@@ -101,32 +110,9 @@ func (c *Client) GetCurrentUser() (*User, error) {
 	return &res, err
 }
 
-func (c *Client) CreateUser(
-	firstName string,
-	lastName string,
-	email string,
-	password string,
-	groupIDs []int64,
-	loginAttributes interface{},
-) (*User, error) {
+func (c *Client) CreateUser(u UserRequest) (*User, error) {
 
-	d := struct {
-		FirstName       string      `json:"first_name"`
-		LastName        string      `json:"last_name"`
-		Email           string      `json:"email"`
-		Password        string      `json:"password"`
-		GroupIDs        []int64     `json:"group_ids"`
-		LoginAttributes interface{} `json:"login_attributes"`
-	}{
-		firstName,
-		lastName,
-		email,
-		password,
-		groupIDs,
-		loginAttributes,
-	}
-
-	reqData, err := json.Marshal(&d)
+	reqData, err := json.Marshal(&u)
 	if err != nil {
 		return nil, err
 	}
@@ -145,11 +131,11 @@ func (c *Client) CreateUser(
 	return res, err
 }
 
-func (c *Client) SendInvite(id int64) (*bool, error) {
+func (c *Client) SendInvite(id int64) error {
 
 	resData, err := c.postRequest(fmt.Sprintf("/api/user/%d/send_invite", id), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	res := struct {
@@ -158,13 +144,13 @@ func (c *Client) SendInvite(id int64) (*bool, error) {
 
 	err = json.Unmarshal(resData, &res)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &res.Success, err
+	return nil
 }
 
-func (c *Client) UserPatch(u UserPatch) (*User, error) {
+func (c *Client) UpdateUser(u UserPatch) (*User, error) {
 
 	reqData, err := json.Marshal(&u)
 	if err != nil {
@@ -219,11 +205,11 @@ func (c *Client) UpdatePassword(
 	return res, err
 }
 
-func (c *Client) Qbnewb(id int64) (*bool, error) {
+func (c *Client) Qbnewb(id int64) error {
 
 	resData, err := c.putRequest(fmt.Sprintf("/api/user/%d/qbnewb", id), nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	res := struct {
@@ -232,10 +218,10 @@ func (c *Client) Qbnewb(id int64) (*bool, error) {
 
 	err = json.Unmarshal(resData, &res)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &res.Success, err
+	return nil
 }
 
 func (c *Client) Reactive(id int64) (*User, error) {

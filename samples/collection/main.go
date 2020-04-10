@@ -7,10 +7,6 @@ import (
 	metabase "github.com/sh-tatsuno/go-metabase-client/metabase"
 )
 
-func newStringPointer(s string) *string {
-	return &s
-}
-
 func main() {
 
 	h := flag.String("host", "http://localhost:3000", "host address")
@@ -26,28 +22,32 @@ func main() {
 		return
 	}
 
-	// Get User
+	// Get Collection
 	cs, err := c.GetCollenctions()
 	if err != nil {
 		fmt.Printf("err in Get Collenctions: %v\n", err)
+		return
 	}
 	fmt.Printf("Get Collenctions:\n %+v\n\n", cs)
 
 	cs2, err := c.GetCollenction(2)
 	if err != nil {
 		fmt.Printf("err in Get Collenction: %v\n", err)
+		return
 	}
 	fmt.Printf("Get Collenction:\n %+v\n\n", cs2)
 
 	csr, err := c.GetRootCollenction()
 	if err != nil {
 		fmt.Printf("err in Get Root Collenctions: %v\n", err)
+		return
 	}
 	fmt.Printf("Get Root Collenctions:\n %+v\n\n", csr)
 
 	csgp, err := c.GetCollenctionGraphPermission()
 	if err != nil {
 		fmt.Printf("err in Get Collenction Graph: %v\n", err)
+		return
 	}
 	fmt.Printf("Get Collenction Graph:\n %+v\n\n", csgp)
 
@@ -61,30 +61,31 @@ func main() {
 	csgp2, err := c.UpdateCollenctionGraphPermission(*csgp)
 	if err != nil {
 		fmt.Printf("err in Update Collenction Graph: %v\n", err)
+		return
 	}
 	fmt.Printf("Update Collenction Graph:\n %+v\n\n", csgp2)
 
 	cr := metabase.CollectionRequest{
 		Name:        "test name",
-		Description: newStringPointer("test collection"),
-		Color:       newStringPointer("#AAAAAA"),
-		ParentID:    nil,
+		Description: "test collection",
+		Color:       "#AAAAAA",
 	}
 	cs3, err := c.CreateCollenction(cr)
 	if err != nil {
 		fmt.Printf("err in Create Collenction: %v\n", err)
+		return
 	}
 	fmt.Printf("Create Collenction:\n %+v\n\n", cs3)
 
 	cu := metabase.CollectionPatch{
-		ID:       cs3.ID,
-		Name:     &cs3.Name,
-		Color:    newStringPointer("#BBBBBB"),
-		ParentID: nil,
+		ID:    cs3.ID,
+		Name:  cs3.Name,
+		Color: "#BBBBBB",
 	}
 	cs4, err := c.UpdateCollenction(cu)
 	if err != nil {
 		fmt.Printf("err in Update Collenction: %v\n", err)
+		return
 	}
 	fmt.Printf("Update Collenction:\n %+v\n\n", cs4)
 

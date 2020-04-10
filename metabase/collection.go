@@ -7,7 +7,7 @@ import (
 
 type Collection struct {
 	ID                 json.Number         `json:"id"`
-	Description        *string             `json:"description,omitempty"`
+	Description        string              `json:"description,omitempty"`
 	Archived           bool                `json:"archived,omitempty"`
 	Slug               string              `json:"slug,omitempty"`
 	Color              string              `json:"color,omitempty"` // TODO: validate color ^#[0-9A-Fa-f]{6}$
@@ -15,8 +15,8 @@ type Collection struct {
 	Name               string              `json:"name"`
 	PersonalOwnerID    int64               `json:"personal_owner_id"`
 	EffectiveAncestors []EffectiveAncestor `json:"effective_ancestors"`
-	EffectiveLocation  *string             `json:"effective_location"`
-	ParentID           *json.Number        `json:"parent_id"`
+	EffectiveLocation  string              `json:"effective_location,omitempty"`
+	ParentID           json.Number         `json:"parent_id,omitempty"`
 	Location           string              `json:"location"`
 }
 
@@ -29,18 +29,18 @@ type EffectiveAncestor struct {
 
 type CollectionPatch struct {
 	ID          json.Number `json:"id"`
-	Name        *string     `json:"name,omitempty"`
-	Description *string     `json:"description,omitempty"`
-	Archived    *bool       `json:"archived,omitempty"`
-	Color       *string     `json:"color,omitempty"`
-	ParentID    *int64      `json:"parent_id,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Archived    bool        `json:"archived,omitempty"`
+	Color       string      `json:"color,omitempty"`
+	ParentID    int64       `json:"parent_id,omitempty"`
 }
 
 type CollectionRequest struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-	Color       *string `json:"color,omitempty"`
-	ParentID    *int64  `json:"parent_id,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	Color       string `json:"color,omitempty"`
+	ParentID    int64  `json:"parent_id,omitempty"`
 }
 
 type CollectionItem struct {
