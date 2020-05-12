@@ -7,10 +7,6 @@ import (
 	metabase "github.com/sh-tatsuno/go-metabase-client/metabase"
 )
 
-func newStringPointer(s string) *string {
-	return &s
-}
-
 func main() {
 
 	h := flag.String("host", "http://localhost:3000", "host address")
@@ -26,30 +22,34 @@ func main() {
 		return
 	}
 
-	// Get User
-	cs, err := c.GetCollenctions()
+	// Get Collection
+	cs, err := c.GetCollections()
 	if err != nil {
-		fmt.Printf("err in Get Collenctions: %v\n", err)
+		fmt.Printf("err in Get Collections: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Collenctions:\n %+v\n\n", cs)
+	fmt.Printf("Get Collections:\n %+v\n\n", cs)
 
-	cs2, err := c.GetCollenction(2)
+	cs2, err := c.GetCollection(2)
 	if err != nil {
-		fmt.Printf("err in Get Collenction: %v\n", err)
+		fmt.Printf("err in Get Collection: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Collenction:\n %+v\n\n", cs2)
+	fmt.Printf("Get Collection:\n %+v\n\n", cs2)
 
-	csr, err := c.GetRootCollenction()
+	csr, err := c.GetRootCollection()
 	if err != nil {
-		fmt.Printf("err in Get Root Collenctions: %v\n", err)
+		fmt.Printf("err in Get Root Collections: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Root Collenctions:\n %+v\n\n", csr)
+	fmt.Printf("Get Root Collections:\n %+v\n\n", csr)
 
-	csgp, err := c.GetCollenctionGraphPermission()
+	csgp, err := c.GetCollectionGraphPermission()
 	if err != nil {
-		fmt.Printf("err in Get Collenction Graph: %v\n", err)
+		fmt.Printf("err in Get Collection Graph Permission: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Collenction Graph:\n %+v\n\n", csgp)
+	fmt.Printf("Get Collection Graph Permission:\n %+v\n\n", csgp)
 
 	// change struct
 	if csgp.Groups["1"].Root == "write" {
@@ -58,34 +58,35 @@ func main() {
 		csgp.Groups["1"] = metabase.CollectionGraphPermissionGroup{Root: "write"}
 	}
 
-	csgp2, err := c.UpdateCollenctionGraphPermission(*csgp)
+	csgp2, err := c.UpdateCollectionGraphPermission(*csgp)
 	if err != nil {
-		fmt.Printf("err in Update Collenction Graph: %v\n", err)
+		fmt.Printf("err in Update Collection Graph Permission: %v\n", err)
+		return
 	}
-	fmt.Printf("Update Collenction Graph:\n %+v\n\n", csgp2)
+	fmt.Printf("Update Collection Graph Permission:\n %+v\n\n", csgp2)
 
 	cr := metabase.CollectionRequest{
 		Name:        "test name",
-		Description: newStringPointer("test collection"),
-		Color:       newStringPointer("#AAAAAA"),
-		ParentID:    nil,
+		Description: "test collection",
+		Color:       "#AAAAAA",
 	}
-	cs3, err := c.CreateCollenction(cr)
+	cs3, err := c.CreateCollection(cr)
 	if err != nil {
-		fmt.Printf("err in Create Collenction: %v\n", err)
+		fmt.Printf("err in Create Collection: %v\n", err)
+		return
 	}
-	fmt.Printf("Create Collenction:\n %+v\n\n", cs3)
+	fmt.Printf("Create Collection:\n %+v\n\n", cs3)
 
 	cu := metabase.CollectionPatch{
-		ID:       cs3.ID,
-		Name:     &cs3.Name,
-		Color:    newStringPointer("#BBBBBB"),
-		ParentID: nil,
+		ID:    cs3.ID,
+		Name:  cs3.Name,
+		Color: "#BBBBBB",
 	}
-	cs4, err := c.UpdateCollenction(cu)
+	cs4, err := c.UpdateCollection(cu)
 	if err != nil {
-		fmt.Printf("err in Update Collenction: %v\n", err)
+		fmt.Printf("err in Update Collection: %v\n", err)
+		return
 	}
-	fmt.Printf("Update Collenction:\n %+v\n\n", cs4)
+	fmt.Printf("Update Collection:\n %+v\n\n", cs4)
 
 }

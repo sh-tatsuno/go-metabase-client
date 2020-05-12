@@ -36,14 +36,13 @@ func main() {
 
 	// Create User
 	email := "create_sample_" + randomGenerator(10) + "@example.com"
-	u1, err := c.CreateUser(
-		"first",
-		"last",
-		email,
-		"passw0rd!",
-		nil,
-		nil,
-	)
+	user := metabase.UserRequest{
+		FirstName: "first",
+		LastName:  "last",
+		Email:     email,
+		Password:  "passw0rd!",
+	}
+	u1, err := c.CreateUser(user)
 	if err != nil {
 		fmt.Printf("err in Create User: %v\n", err)
 		return
@@ -54,6 +53,7 @@ func main() {
 	u2, err := c.GetUsers(true)
 	if err != nil {
 		fmt.Printf("err in Get Users: %v\n", err)
+		return
 	}
 	fmt.Printf("All Users:\n %+v\n\n", u2)
 
@@ -61,6 +61,7 @@ func main() {
 	u3, err := c.GetUser(u1.ID)
 	if err != nil {
 		fmt.Printf("err in Get User: %v\n", err)
+		return
 	}
 	fmt.Printf("Get User:\n %+v\n\n", u3)
 
@@ -68,6 +69,7 @@ func main() {
 	u4, err := c.GetCurrentUser()
 	if err != nil {
 		fmt.Printf("err in Get Current User: %v\n", err)
+		return
 	}
 	fmt.Printf("Get Current User:\n %+v\n\n", u4)
 
@@ -75,6 +77,7 @@ func main() {
 	err = c.DeleteUser(u1.ID)
 	if err != nil {
 		fmt.Printf("err in Delete User: %v\n", err)
+		return
 	}
 	fmt.Println("deleted")
 

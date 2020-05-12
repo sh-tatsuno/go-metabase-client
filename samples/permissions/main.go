@@ -36,18 +36,20 @@ func main() {
 	}
 
 	// Get User
-	x, err := c.GetPermissionsMemberships()
+	gpm, err := c.GetPermissionsMemberships()
 	if err != nil {
-		fmt.Printf("err in Get Permission: %v\n", err)
+		fmt.Printf("err in Get Permission Membership: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Graph:\n %+v\n\n", x)
+	fmt.Printf("Get Permission Membership:\n %+v\n\n", gpm)
 
 	// Get User Permission
-	r, err := c.GetPermissionsGraphs()
+	gpg, err := c.GetPermissionsGraphs()
 	if err != nil {
-		fmt.Printf("err in Get Permission: %v\n", err)
+		fmt.Printf("err in Get Permission Graph: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Graph Permission:\n %+v\n\n", r)
+	fmt.Printf("Get Permission Graph:\n %+v\n\n", gpg)
 
 	// update status
 	// switch allow <-> deny permission of group 1 for graph 1
@@ -60,16 +62,17 @@ func main() {
 		Native: "none",
 	}
 
-	if reflect.DeepEqual(r.Groups["1"]["1"], &allowPermission) {
-		r.Groups["1"]["1"] = &denyPermission
+	if reflect.DeepEqual(gpg.Groups["1"]["1"], &allowPermission) {
+		gpg.Groups["1"]["1"] = &denyPermission
 	} else {
-		r.Groups["1"]["1"] = &allowPermission
+		gpg.Groups["1"]["1"] = &allowPermission
 	}
 
-	r2, err := c.UpdatePermissionsGraph(*r)
+	upg, err := c.UpdatePermissionsGraph(*gpg)
 	if err != nil {
 		fmt.Printf("err in Update Permission: %v\n", err)
+		return
 	}
-	fmt.Printf("Get Graph:\n %+v\n\n", r2)
+	fmt.Printf("Update Permission:\n %+v\n\n", upg)
 
 }
