@@ -185,7 +185,7 @@ func (c *Client) UpdateCollection(cp CollectionPatch) (*Collection, error) {
 		return nil, err
 	}
 
-	resData, err := c.postRequest("/api/collection", reqData)
+	resData, err := c.putRequest("/api/collection", reqData)
 	if err != nil {
 		return nil, err
 	}
