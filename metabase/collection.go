@@ -52,13 +52,12 @@ type CollectionItem struct {
 	CanWrite           bool        `json:"can_write,omitempty"`
 }
 
-type CollectionGraphPermission struct {
-	Revision int64                                     `json:"revision"`
-	Groups   map[string]CollectionGraphPermissionGroup `json:"groups"`
-}
+// groups: {{group_id} :{{collection_id}: {status},...}
+// status : "write", "read", "none"
 
-type CollectionGraphPermissionGroup struct {
-	Root string `json:"root"`
+type CollectionGraphPermission struct {
+	Revision int64             `json:"revision"`
+	Groups   map[string]string `json:"groups"`
 }
 
 func (c *Client) GetCollections() ([]Collection, error) {
