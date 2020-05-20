@@ -12,9 +12,12 @@ type Group struct {
 }
 
 type Membership struct {
-	MembershipID int64 `json:"membership_id"`
-	GroupID      int64 `json:"group_id"`
-	UserID       int64 `json:"user_id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Email        string `json:"email"`
+	MembershipID int64  `json:"membership_id"`
+	GroupID      int64  `json:"group_id"`
+	UserID       int64  `json:"user_id"`
 }
 
 func (c *Client) DeletePermissionsGroup(groupID int64) error {
@@ -85,7 +88,7 @@ func (c *Client) GetPermissionsMemberships() (map[string][]Membership, error) {
 	return res, nil
 }
 
-func (c *Client) CreatePermissionsMembership(groupID int64, userID int64) (*Membership, error) {
+func (c *Client) CreatePermissionsMembership(groupID int64, userID int64) ([]Membership, error) {
 
 	d := struct {
 		GroupID int64 `json:"group_id"`
@@ -104,13 +107,13 @@ func (c *Client) CreatePermissionsMembership(groupID int64, userID int64) (*Memb
 		return nil, err
 	}
 
-	res := Membership{}
+	res := []Membership{}
 	err = json.Unmarshal(resData, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }
 
 func (c *Client) CreatePermissionsGroup(groupName string) (*Group, error) {
